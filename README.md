@@ -32,7 +32,7 @@ As the script runs by reading a file passed as an argument during it's execution
         echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> $LOG_FILE
     }
 ```  
-The logging function logs actions with timestamps to facilitate auditing and troubleshooting.
+The logging function logs actions with timestamps to facilitate auditing and troubleshooting. As an argument, it takes a message to be logged with the timestamp attached.
 
 3. Setting Up Log and Password Files:
 
@@ -58,7 +58,7 @@ touch $password_file
 
 chmod 600 $password_file
 ```
-We then define the log and password file paths, ensuring they exist, and setting secure permissions for the password file.
+We then define the log and password file paths, ensuring they exist, and setting secure permissions for the password file. The secure directory, located in /var, does not exist by default so we create it if it is missing.
 
 4. Password Generation Function:
 
@@ -76,7 +76,7 @@ while IFS=';' read -r user groups; do
 	user=$(echo $user | xargs)
 	groups=$(echo $groups | xargs)
 ```
-This reads each line from the input file, stripping any leading/trailing whitespace from usernames and groups.
+This reads each line from the input file, stripping any leading/trailing whitespace from usernames and groups. Following the format of the input file, the user is separated from the group(s) with a semi-colon and using IFS, we save these details into variables.
 
 6. User and Group Creation:
 
@@ -94,7 +94,7 @@ This reads each line from the input file, stripping any leading/trailing whitesp
 	useradd -m -g "$user" -s /bin/bash "$user"
 	logging "User $user created with home directory."
 ```
-We check if the user exists, create a user-specific group if not already present, and then create the user with a home directory.
+We check if the user exists, if it does, we skip that user to the next user in line. Otherwise, we create a user-specific group if not already present, and then create the user with a home directory.
 
 7. Password Assignment:
 
@@ -121,7 +121,7 @@ Here we assign a random password to the user and log it securely.
 		logging "User $user added to group $group."
 	done
 ```
-The user is added to any additional groups, creating those groups if they don't exist.
+The groups are separated by a comma and the file separator is used to add these groups into an array which is looped through for the user to be added to, creating those groups if they don't exist.
 
 9. Setting Home Directory Permissions:
 
